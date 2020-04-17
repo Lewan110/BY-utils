@@ -1,0 +1,8 @@
+export enum GoalStatus {
+  EMERGENCY = 'EMERGENCY',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  INACTIVE = 'INACTIVE',
+  SKIPPED = 'SKIPPED',
+  EMPTY = 'EMPTY'
+}

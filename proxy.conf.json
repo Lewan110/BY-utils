@@ -1,0 +1,7 @@
+{
+  "/api/*": {
+    "target": "https://program.trwalamotywacja.pl",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
