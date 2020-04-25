@@ -10,15 +10,15 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-[PL]
-Aplikacja rozszerzajaca funkcjonalnosc Programu Best-You.
+##[PL] Aplikacja rozszerzajaca funkcjonalnosc Programu Best-You.
+
 
 To-do:
--dodanie tlumaczenia,
--rozbudowanie powodu porazek w postanowieniach,
--dodatkowe wykresy,
--bardziej szczegolowa instrukcja uruchomienia,
--walidacja tokenu,
--wiadomosci bledow,
--dodanie automatycznego odswiezania tokenu
--eksport notatek
+- dodanie tlumaczenia,
+- rozbudowanie powodu porazek w postanowieniach,
+- dodatkowe wykresy,
+- bardziej szczegolowa instrukcja uruchomienia,
+- walidacja tokenu,
+- wiadomosci bledow,
+- dodanie automatycznego odswiezania tokenu
+- eksport notatek
