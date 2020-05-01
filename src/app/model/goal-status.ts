@@ -45,7 +45,7 @@ export class EnrichGoalStatus {
     }
   }
 
-  public static generateFailureReasonsConstans(): string[] {
+  public static generateFailureReasonsConstants(): string[] {
     const array = Array.from(Array.from(EnrichGoalStatus.translatedStatusMap.values()));
     for (const key of EnrichGoalStatus.translatedFailureType.keys()) {
       array.push(EnrichGoalStatus.generateFailureReason(key));

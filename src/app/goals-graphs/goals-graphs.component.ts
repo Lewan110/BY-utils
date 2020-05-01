@@ -90,7 +90,7 @@ export class GoalsGraphsComponent implements OnInit {
       legend: {
         orient: 'vertical',
         left: 10,
-        data: EnrichGoalStatus.generateFailureReasonsConstans()
+        data: EnrichGoalStatus.generateFailureReasonsConstants()
       },
       series: [
         {
@@ -101,13 +101,6 @@ export class GoalsGraphsComponent implements OnInit {
           label: {
             show: false,
             position: 'center'
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: '30',
-              fontWeight: 'bold'
-            }
           },
           labelLine: {
             show: false
