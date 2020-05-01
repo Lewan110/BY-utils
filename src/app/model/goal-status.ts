@@ -17,7 +17,7 @@ export enum FailureType {
 
 export class EnrichGoalStatus {
 
-  public static translatedStatusMap: Map<GoalStatus, string> = new Map([
+  public static translatedStatus: Map<GoalStatus, string> = new Map([
     [GoalStatus.COMPLETED, 'WYKONANE'],
     [GoalStatus.EMERGENCY, 'AWARYJNE'],
     [GoalStatus.FAILED, 'PORAŻKA'],
@@ -27,10 +27,10 @@ export class EnrichGoalStatus {
   ]);
   public static translatedFailureType: Map<FailureType, string> = new Map([
     [FailureType.HARD_CIRCUMSTANCES, 'TRUDNE OKOLICZNOŚCI'],
+    [FailureType.UNEXPECTED_EVENT, 'NIESPODZIWANA SYTUACJA'],
     [FailureType.BAD_SITUATION, 'ZŁA SYTUACJA'],
     [FailureType.FORGET, 'ZAPOMNIENIE'],
     [FailureType.CONSCIOUS_FAILURE, 'ZAPLANOWANE'],
-    [FailureType.UNEXPECTED_EVENT, 'NIESPODZIWANA SYTUACJA'],
   ]);
   value: GoalStatus;
   failureReason: FailureType;
@@ -38,22 +38,22 @@ export class EnrichGoalStatus {
 
   constructor(value: GoalStatus, failureType: FailureType) {
     this.value = value;
-    this.translated = EnrichGoalStatus.translatedStatusMap.get(value);
+    this.translated = EnrichGoalStatus.translatedStatus.get(value);
     if (failureType !== undefined) {
       this.failureReason = failureType;
       this.translated = EnrichGoalStatus.generateFailureReason(failureType);
     }
   }
 
-  public static generateFailureReasonsConstants(): string[] {
-    const array = Array.from(Array.from(EnrichGoalStatus.translatedStatusMap.values()));
+  public static generateStatusValues(): string[] {
+    const values = [];
     for (const key of EnrichGoalStatus.translatedFailureType.keys()) {
-      array.push(EnrichGoalStatus.generateFailureReason(key));
+      values.push(EnrichGoalStatus.generateFailureReason(key));
     }
-    return array;
+    return values.concat(Array.from(EnrichGoalStatus.translatedStatus.values()));
   }
 
   private static generateFailureReason(failureType: FailureType): string {
-    return EnrichGoalStatus.translatedStatusMap.get(GoalStatus.FAILED) + ' - ' + EnrichGoalStatus.translatedFailureType.get(failureType);
+    return EnrichGoalStatus.translatedStatus.get(GoalStatus.FAILED) + ' - ' + EnrichGoalStatus.translatedFailureType.get(failureType);
   }
 }

@@ -29,6 +29,17 @@ mat-form-field {
   justify-content: center;
 }
 
+.bar-chart-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.bar-chart-button {
+  margin: 15px;;
+}
+
+
 .generate-graph-controls {
   display: flex;
   align-items: center;
@@ -38,6 +49,7 @@ mat-form-field {
 .graphs-list {
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   margin: 15px;
 }
