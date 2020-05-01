@@ -36,5 +36,24 @@
   <button (click)="click()" color="primary" mat-raised-button type="submit"> Generate graphs</button>
 </div>
 <div class='graphs-list'>
+  <br>
+  <h2>Pie chart</h2>
   <div id="goals-status-chart" style="width: 800px;height:500px;"></div>
+  <br>
+  <h2>Bar chart</h2>
+  <div class="bar-chart-buttons">
+    <button (click)="updateBarChart('daily')" class="bar-chart-button" mat-raised-button type="submit">
+      Daily
+    </button>
+    <button (click)="updateBarChart('weekly')" class="bar-chart-button" mat-raised-button type="submit">
+      Weekly
+    </button>
+    <button (click)="updateBarChart('monthly')" class="bar-chart-button" mat-raised-button type="submit">
+      Monthly
+    </button>
+    <button (click)="updateBarChart('yearly')" class="bar-chart-button" mat-raised-button type="submit">
+      Yearly
+    </button>
+  </div>
+  <div id="goals-bar-chart" style="width: 800px;height:500px;"></div>
 </div>

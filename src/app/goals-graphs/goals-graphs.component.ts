@@ -23,20 +23,34 @@ export class TokenMatcher implements ErrorStateMatcher {
   styleUrls: ['./goals-graphs.component.scss']
 })
 export class GoalsGraphsComponent implements OnInit {
+  public static statusToPercentageMapper: Map<GoalStatus, number> = new Map([
+    [GoalStatus.COMPLETED, 100],
+    [GoalStatus.EMERGENCY, 20],
+    [GoalStatus.FAILED, -100],
+    [GoalStatus.INACTIVE, 0],
+    [GoalStatus.SKIPPED, 0],
+    [GoalStatus.EMPTY, 0],
+  ]);
+  goalBarChart;
 
   token;
   selectedGoal;
   goalsStatusChart;
+  goalsValues: GoalDay[] = [];
   goals: Goal[] = [];
   startDate = new FormControl((new Date()));
   endDate = new FormControl((new Date()));
-  goalsValues: GoalDay[] = this.dummyGoalValues();
 
   constructor(private dataService: DataService, private datePipe: DatePipe) {
   }
 
   ngOnInit(): void {
+    this.goalsValues = this.dummyGoalValues();
     this.createGoalsStatusChart();
+    this.createGoalBarChart(
+      this.dummyGoalValues().map(goal => goal.date),
+      this.dummyGoalValues().map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
+    );
   }
 
   click() {
@@ -58,14 +72,15 @@ export class GoalsGraphsComponent implements OnInit {
           );
         });
         this.createGoalsStatusChart();
+        this.createGoalBarChart(
+          this.goalsValues.map(goal => goal.date),
+          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
+        );
       });
-
-
   }
 
   fetchGoals(token) {
     this.token = token;
-
     this.dataService.fetchAllGoals(this.token).subscribe(data => {
       this.goals = [];
       data.forEach(goal =>
@@ -79,6 +94,26 @@ export class GoalsGraphsComponent implements OnInit {
 
   }
 
+  updateBarChart(period: string) {
+    switch (period) {
+      case 'daily': {
+        this.createGoalBarChart(
+          this.goalsValues.map(goal => goal.date),
+          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
+        );
+        break;
+      }
+      case 'weekly': {
+        this.createGoalBarChart(
+          this.goalsValues
+            .filter((goal, i) => i % 7)
+            .map(goal => goal.date),
+          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
+        );
+        break;
+      }
+    }
+  }
 
   private createGoalsStatusChart() {
     this.goalsStatusChart = echarts.init(document.getElementById('goals-status-chart'));
@@ -90,7 +125,7 @@ export class GoalsGraphsComponent implements OnInit {
       legend: {
         orient: 'vertical',
         left: 10,
-        data: EnrichGoalStatus.generateFailureReasonsConstants()
+        data: EnrichGoalStatus.generateStatusValues()
       },
       series: [
         {
@@ -154,4 +189,46 @@ export class GoalsGraphsComponent implements OnInit {
       ),
     ];
   }
+
+  private createGoalBarChart(xValues, yValues) {
+    this.goalBarChart = echarts.init(document.getElementById('goals-bar-chart'));
+
+    const option = {
+      color: ['#3398DB'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: xValues,
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value'
+        }
+      ],
+      series: [
+        {
+          name: 'Status',
+          type: 'bar',
+          barWidth: '60%',
+          data: yValues,
+        }
+      ]
+    };
+    this.goalBarChart.setOption(option);
+  }
+
+
 }
