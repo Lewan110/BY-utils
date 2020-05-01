@@ -14,8 +14,8 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 
 To-do:
-- dodanie tlumaczenia,
-- rozbudowanie powodu porazek w postanowieniach,
+- ~~dodanie tlumaczenia~~,
+- ~~rozbudowanie powodu porazek w postanowieniach~~,
 - dodatkowe wykresy,
 - bardziej szczegolowa instrukcja uruchomienia,
 - walidacja tokenu,

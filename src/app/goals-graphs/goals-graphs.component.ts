@@ -7,7 +7,7 @@ import * as echarts from '../../assets/echarts';
 import {GoalDay} from '../model/goal-day-dto';
 import {from} from 'rxjs';
 import {groupBy, mergeMap, toArray} from 'rxjs/operators';
-import {EnrichGoalStatus} from '../model/goal-status';
+import {EnrichGoalStatus, FailureType, GoalStatus} from '../model/goal-status';
 import {ErrorStateMatcher} from '@angular/material/core';
 
 export class TokenMatcher implements ErrorStateMatcher {
@@ -30,7 +30,7 @@ export class GoalsGraphsComponent implements OnInit {
   goals: Goal[] = [];
   startDate = new FormControl((new Date()));
   endDate = new FormControl((new Date()));
-  goalsValues: GoalDay[] = [];
+  goalsValues: GoalDay[] = this.dummyGoalValues();
 
   constructor(private dataService: DataService, private datePipe: DatePipe) {
   }
@@ -46,6 +46,7 @@ export class GoalsGraphsComponent implements OnInit {
       this.datePipe.transform(this.startDate.value, 'yyyy-MM-dd'),
       this.datePipe.transform(this.endDate.value, 'yyyy-MM-dd'))
       .subscribe(data => {
+        this.goalsValues = [];
         data.forEach(entry => {
           this.goalsValues.push(new GoalDay(
             entry.id,
@@ -126,5 +127,38 @@ export class GoalsGraphsComponent implements OnInit {
       resultArray.push({value: entry.length, name: entry[0].selection.translated});
     });
     return resultArray;
+  }
+
+  private dummyGoalValues() {
+    return [
+      new GoalDay(
+        '1',
+        this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
+        new EnrichGoalStatus(GoalStatus.COMPLETED, undefined),
+        'entry.mode',
+        true
+      ),
+      new GoalDay(
+        '2',
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 1)), 'yyyy-MM-dd'),
+        new EnrichGoalStatus(GoalStatus.FAILED, FailureType.BAD_SITUATION),
+        'entry.mode',
+        true
+      ),
+      new GoalDay(
+        '3',
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 2)), 'yyyy-MM-dd'),
+        new EnrichGoalStatus(GoalStatus.FAILED, FailureType.FORGET),
+        'entry.mode',
+        true
+      ),
+      new GoalDay(
+        '4',
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 3)), 'yyyy-MM-dd'),
+        new EnrichGoalStatus(GoalStatus.EMERGENCY, undefined),
+        'entry.mode',
+        true
+      ),
+    ];
   }
 }
