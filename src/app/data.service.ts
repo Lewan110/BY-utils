@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {GoalDay} from './model/goal-day';
+import {GoalDayDto} from './model/goal-day-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,7 @@ export class DataService {
     const headers = new HttpHeaders({
       Authorization: token
     });
-    return this.http.get<GoalDay[]>(`api/goals/${goalId}/days?from=${startDate}&to=${endDate}`, {headers});
+    return this.http.get<GoalDayDto[]>(`api/goals/${goalId}/days?from=${startDate}&to=${endDate}`, {headers});
   }
 
 }

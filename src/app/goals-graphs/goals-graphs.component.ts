@@ -4,10 +4,10 @@ import {Goal} from '../model/goal';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DatePipe} from '@angular/common';
 import * as echarts from '../../assets/echarts';
-import {GoalDay} from '../model/goal-day';
+import {GoalDay} from '../model/goal-day-dto';
 import {from} from 'rxjs';
 import {groupBy, mergeMap, toArray} from 'rxjs/operators';
-import {GoalStatus} from '../model/goal-status';
+import {EnrichGoalStatus} from '../model/goal-status';
 import {ErrorStateMatcher} from '@angular/material/core';
 
 export class TokenMatcher implements ErrorStateMatcher {
@@ -46,7 +46,16 @@ export class GoalsGraphsComponent implements OnInit {
       this.datePipe.transform(this.startDate.value, 'yyyy-MM-dd'),
       this.datePipe.transform(this.endDate.value, 'yyyy-MM-dd'))
       .subscribe(data => {
-        this.goalsValues = data;
+        data.forEach(entry => {
+          this.goalsValues.push(new GoalDay(
+            entry.id,
+            entry.date,
+            new EnrichGoalStatus(entry.selection, entry.failure_type),
+            entry.mode,
+            entry.automatic
+            )
+          );
+        });
         this.createGoalsStatusChart();
       });
 
@@ -80,7 +89,7 @@ export class GoalsGraphsComponent implements OnInit {
       legend: {
         orient: 'vertical',
         left: 10,
-        data: Object.values(GoalStatus)
+        data: EnrichGoalStatus.generateFailureReasonsConstans()
       },
       series: [
         {
@@ -112,9 +121,9 @@ export class GoalsGraphsComponent implements OnInit {
   private setGoalsChartValues(goalsValues: GoalDay[]) {
     const resultArray = [];
     from(goalsValues).pipe(
-      groupBy(goal => goal.selection),
+      groupBy(goal => goal.selection.translated),
       mergeMap(group => group.pipe(toArray()))).subscribe(entry => {
-      resultArray.push({value: entry.length, name: entry[0].selection});
+      resultArray.push({value: entry.length, name: entry[0].selection.translated});
     });
     return resultArray;
   }
