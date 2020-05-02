@@ -8,7 +8,11 @@ import {MatDialogRef} from '@angular/material/dialog';
 })
 export class ErrorMessageComponent implements OnInit {
 
-  message = 'Błąd - token już wygasł - odśwież stronę i podaj nowy token';
+  message = 'Wystąpił błąd, sprawdź czy: \n' +
+    '1. Podany został prawidłowy format tokenu \n' +
+    '2. Zostało wybrane postanowienie z listy \n' +
+    '3. Jeśli obie powyższe rzeczy są poprawne prawdopodobnie wygasła ważność tokenu - \n' +
+    '   odśwież stronę i podaj nowy token.';
 
   constructor(private dialogRef: MatDialogRef<ErrorMessageComponent>) {
   }

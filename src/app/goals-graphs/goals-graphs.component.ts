@@ -28,10 +28,10 @@ export class TokenMatcher implements ErrorStateMatcher {
 export class GoalsGraphsComponent implements OnInit {
   public static statusToPercentageMapper: Map<string, number> = new Map([
     ['WYKONANE', 100],
+    ['NIE OBOWIĄZUJE', 100],
     ['AWARYJNE', 50],
     ['POMINIĘTE', 0],
     ['NIE ZAZNACZONE', 0],
-    ['NIE OBOWIĄZUJE', 0],
     ['PORAŻKA', -100],
     ['PORAŻKA - ZAPOMNIENIE', -100],
     ['PORAŻKA - ZAPLANOWANE', 0],
@@ -45,7 +45,7 @@ export class GoalsGraphsComponent implements OnInit {
   goalsStatusChart;
   goalsValues: GoalDay[] = this.dummyGoalValues();
   goals: Goal[] = [];
-  startDate = new FormControl(new Date(new Date().setDate(new Date().getDate() - 100)));
+  startDate = new FormControl(new Date(new Date().setDate(new Date().getDate() - 1000)));
   endDate = new FormControl((new Date()));
 
   constructor(private dataService: DataService, private datePipe: DatePipe, private dialog: MatDialog,) {
