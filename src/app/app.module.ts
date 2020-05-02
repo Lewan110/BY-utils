@@ -13,16 +13,19 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatNativeDateModule, MatOptionModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
 import {HttpClientModule} from '@angular/common/http';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {DatePipe} from '@angular/common';
+import {EditStatusValuesDialogComponent} from './edit-status-values-dialog/edit-status-values-dialog.component';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GoalsGraphsComponent
+    GoalsGraphsComponent,
+    EditStatusValuesDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -42,9 +45,11 @@ import {DatePipe} from '@angular/common';
     FormsModule,
     HttpClientModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTableModule
   ],
-  providers: [DatePipe],
+  providers: [DatePipe,
+    {provide: MatDialogRef, useValue: {}}],
   bootstrap: [AppComponent]
 })
 export class AppModule {

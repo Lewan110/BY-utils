@@ -1,0 +1,25 @@
+.mat-form-field {
+  display: block;
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+}
+
+.form-field-name {
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-right: 20px;
+}
+
+.form-field-input {
+  width: 50px !important
+}

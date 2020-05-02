@@ -12,13 +12,3 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## [PL] Aplikacja rozszerzajaca funkcjonalnosc Programu Best-You.
 
-
-To-do:
-- ~~dodanie tlumaczenia~~,
-- ~~rozbudowanie powodu porazek w postanowieniach~~,
-- dodatkowe wykresy,
-- bardziej szczegolowa instrukcja uruchomienia,
-- walidacja tokenu,
-- wiadomosci bledow,
-- dodanie automatycznego odswiezania tokenu
-- eksport notatek

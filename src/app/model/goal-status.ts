@@ -27,7 +27,7 @@ export class EnrichGoalStatus {
   ]);
   public static translatedFailureType: Map<FailureType, string> = new Map([
     [FailureType.HARD_CIRCUMSTANCES, 'TRUDNE OKOLICZNOŚCI'],
-    [FailureType.UNEXPECTED_EVENT, 'NIESPODZIWANA SYTUACJA'],
+    [FailureType.UNEXPECTED_EVENT, 'NIESPODZIEWANA SYTUACJA'],
     [FailureType.BAD_SITUATION, 'ZŁA SYTUACJA'],
     [FailureType.FORGET, 'ZAPOMNIENIE'],
     [FailureType.CONSCIOUS_FAILURE, 'ZAPLANOWANE'],

@@ -6,9 +6,11 @@ import {DatePipe} from '@angular/common';
 import * as echarts from '../../assets/echarts';
 import {GoalDay} from '../model/goal-day-dto';
 import {from} from 'rxjs';
-import {groupBy, mergeMap, toArray} from 'rxjs/operators';
+import {groupBy, map, mergeMap, toArray} from 'rxjs/operators';
 import {EnrichGoalStatus, FailureType, GoalStatus} from '../model/goal-status';
 import {ErrorStateMatcher} from '@angular/material/core';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {EditStatusValuesDialogComponent} from '../edit-status-values-dialog/edit-status-values-dialog.component';
 
 export class TokenMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -23,37 +25,36 @@ export class TokenMatcher implements ErrorStateMatcher {
   styleUrls: ['./goals-graphs.component.scss']
 })
 export class GoalsGraphsComponent implements OnInit {
-  public static statusToPercentageMapper: Map<GoalStatus, number> = new Map([
-    [GoalStatus.COMPLETED, 100],
-    [GoalStatus.EMERGENCY, 20],
-    [GoalStatus.FAILED, -100],
-    [GoalStatus.INACTIVE, 0],
-    [GoalStatus.SKIPPED, 0],
-    [GoalStatus.EMPTY, 0],
+  public static statusToPercentageMapper: Map<string, number> = new Map([
+    ['WYKONANE', 100],
+    ['AWARYJNE', 50],
+    ['NIE OBOWIĄZUJE', 0],
+    ['POMINIĘTE', 0],
+    ['PORAŻKA - ZAPOMNIENIE', -100],
+    ['PORAŻKA', -100],
+    ['PORAŻKA - ZAPLANOWANE', 0],
+    ['PORAŻKA - ZŁA SYTUACJA', -50],
+    ['PORAŻKA - TRUDNE OKOLICZNOŚCI', -50],
+    ['PORAŻKA - NIESPODZIEWANA SYTUACJA', -30],
   ]);
   goalBarChart;
-
   token;
   selectedGoal;
   goalsStatusChart;
-  goalsValues: GoalDay[] = [];
+  goalsValues: GoalDay[] = this.dummyGoalValues();
   goals: Goal[] = [];
-  startDate = new FormControl((new Date()));
+  startDate = new FormControl(new Date(new Date().setDate(new Date().getDate() - 100)));
   endDate = new FormControl((new Date()));
 
-  constructor(private dataService: DataService, private datePipe: DatePipe) {
+  constructor(private dataService: DataService, private datePipe: DatePipe, private dialog: MatDialog,) {
   }
 
   ngOnInit(): void {
-    this.goalsValues = this.dummyGoalValues();
     this.createGoalsStatusChart();
-    this.createGoalBarChart(
-      this.dummyGoalValues().map(goal => goal.date),
-      this.dummyGoalValues().map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
-    );
+    this.updateBarChart('daily');
   }
 
-  click() {
+  generateCharts() {
     this.dataService.fetchGoalHistory(
       this.token,
       this.selectedGoal,
@@ -79,6 +80,42 @@ export class GoalsGraphsComponent implements OnInit {
       });
   }
 
+  updateBarChart(period: string) {
+    switch (period) {
+      case 'daily': {
+        this.createGoalBarChart(
+          this.goalsValues.map(goal => goal.date),
+          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.translated))
+        );
+        break;
+      }
+      case 'weekly': {
+        const values = this.calculateAvgPerPeriod(this.goalsValues, 'ww-yyyy');
+        this.createGoalBarChart(
+          values.map(value => value[0]),
+          values.map(value => value[1])
+        );
+        break;
+      }
+      case 'monthly': {
+        const values = this.calculateAvgPerPeriod(this.goalsValues, 'MM-yyyy');
+        this.createGoalBarChart(
+          values.map(value => value[0]),
+          values.map(value => value[1])
+        );
+        break;
+      }
+      case 'yearly': {
+        const values = this.calculateAvgPerPeriod(this.goalsValues, 'yyyy');
+        this.createGoalBarChart(
+          values.map(value => value[0]),
+          values.map(value => value[1])
+        );
+        break;
+      }
+    }
+  }
+
   fetchGoals(token) {
     this.token = token;
     this.dataService.fetchAllGoals(this.token).subscribe(data => {
@@ -91,28 +128,22 @@ export class GoalsGraphsComponent implements OnInit {
         ))
       );
     });
-
   }
 
-  updateBarChart(period: string) {
-    switch (period) {
-      case 'daily': {
-        this.createGoalBarChart(
-          this.goalsValues.map(goal => goal.date),
-          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
-        );
-        break;
-      }
-      case 'weekly': {
-        this.createGoalBarChart(
-          this.goalsValues
-            .filter((goal, i) => i % 7)
-            .map(goal => goal.date),
-          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
-        );
-        break;
-      }
-    }
+  editStatusToValueMap() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    const dialogRef = this.dialog.open(EditStatusValuesDialogComponent, {
+      width: '30%',
+      height: '50%',
+      data: GoalsGraphsComponent.statusToPercentageMapper
+    });
+    dialogRef.afterClosed().subscribe(
+      data => {
+        GoalsGraphsComponent.statusToPercentageMapper = data;
+      });
   }
 
   private createGoalsStatusChart() {
@@ -157,6 +188,25 @@ export class GoalsGraphsComponent implements OnInit {
     return resultArray;
   }
 
+  private calculateAvgPerPeriod(values: GoalDay[], period: string): any[] {
+    const resultArray = [];
+    from(values).pipe(
+      groupBy(goal => this.datePipe.transform(goal.date, period)),
+      mergeMap(group => group.pipe(toArray())),
+      map(array => [
+          this.datePipe.transform(array[0].date, period),
+          array
+            .map(day => GoalsGraphsComponent.statusToPercentageMapper.get(day.selection.translated))
+            .reduce((prev, curr) => prev + curr, 1) / array.length
+        ]
+      ))
+      .subscribe(entry => {
+        resultArray.push(entry);
+      });
+
+    return resultArray;
+  }
+
   private dummyGoalValues() {
     return [
       new GoalDay(
@@ -187,6 +237,13 @@ export class GoalsGraphsComponent implements OnInit {
         'entry.mode',
         true
       ),
+      new GoalDay(
+        '5',
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 50)), 'yyyy-MM-dd'),
+        new EnrichGoalStatus(GoalStatus.SKIPPED, undefined),
+        'entry.mode',
+        true
+      ),
     ];
   }
 
@@ -200,6 +257,15 @@ export class GoalsGraphsComponent implements OnInit {
         axisPointer: {
           type: 'shadow'
         }
+      },
+      toolbox: {
+        feature: {
+          magicType: {show: true, type: ['line', 'bar']},
+          saveAsImage: {show: true}
+        }
+      },
+      legend: {
+        data: ['Linia', 'Słupki']
       },
       grid: {
         left: '3%',
@@ -220,15 +286,23 @@ export class GoalsGraphsComponent implements OnInit {
       ],
       series: [
         {
-          name: 'Status',
+          name: 'Słupki',
           type: 'bar',
           barWidth: '60%',
           data: yValues,
+        },
+        {
+          color: 'red',
+          lineStyle: {
+            color: 'red',
+            width: 5
+          },
+          name: 'Linia',
+          type: 'line',
+          data: yValues
         }
       ]
     };
     this.goalBarChart.setOption(option);
   }
-
-
 }

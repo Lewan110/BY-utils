@@ -1,0 +1,13 @@
+<mat-dialog-content [formGroup]="form">
+  <div *ngFor="let key of this.getArray(this.data.keys())">
+    <label class="form-fields">
+      <div class="form-field-name">{{key}}:</div>
+      <input class="form-field-input" formControlName="{{key}}" matInput type="number">
+    </label>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="close()" class="mat-raised-button">Zamknij</button>
+  <button (click)="save()" class="mat-raised-button mat-primary">Zapisz</button>
+</mat-dialog-actions>
+
