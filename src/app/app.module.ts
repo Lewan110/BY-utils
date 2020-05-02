@@ -20,12 +20,14 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {DatePipe} from '@angular/common';
 import {EditStatusValuesDialogComponent} from './edit-status-values-dialog/edit-status-values-dialog.component';
 import {MatTableModule} from '@angular/material/table';
+import {ErrorMessageComponent} from './error-message/error-message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GoalsGraphsComponent,
-    EditStatusValuesDialogComponent
+    EditStatusValuesDialogComponent,
+    ErrorMessageComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import {EnrichGoalStatus, FailureType, GoalStatus} from '../model/goal-status';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {EditStatusValuesDialogComponent} from '../edit-status-values-dialog/edit-status-values-dialog.component';
+import {ErrorMessageComponent} from '../error-message/error-message.component';
 
 export class TokenMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -28,10 +29,11 @@ export class GoalsGraphsComponent implements OnInit {
   public static statusToPercentageMapper: Map<string, number> = new Map([
     ['WYKONANE', 100],
     ['AWARYJNE', 50],
-    ['NIE OBOWIĄZUJE', 0],
     ['POMINIĘTE', 0],
-    ['PORAŻKA - ZAPOMNIENIE', -100],
+    ['NIE ZAZNACZONE', 0],
+    ['NIE OBOWIĄZUJE', 0],
     ['PORAŻKA', -100],
+    ['PORAŻKA - ZAPOMNIENIE', -100],
     ['PORAŻKA - ZAPLANOWANE', 0],
     ['PORAŻKA - ZŁA SYTUACJA', -50],
     ['PORAŻKA - TRUDNE OKOLICZNOŚCI', -50],
@@ -51,7 +53,7 @@ export class GoalsGraphsComponent implements OnInit {
 
   ngOnInit(): void {
     this.createGoalsStatusChart();
-    this.updateBarChart('daily');
+    this.updateBarChart('weekly');
   }
 
   generateCharts() {
@@ -61,23 +63,22 @@ export class GoalsGraphsComponent implements OnInit {
       this.datePipe.transform(this.startDate.value, 'yyyy-MM-dd'),
       this.datePipe.transform(this.endDate.value, 'yyyy-MM-dd'))
       .subscribe(data => {
-        this.goalsValues = [];
-        data.forEach(entry => {
-          this.goalsValues.push(new GoalDay(
-            entry.id,
-            entry.date,
-            new EnrichGoalStatus(entry.selection, entry.failure_type),
-            entry.mode,
-            entry.automatic
-            )
-          );
-        });
-        this.createGoalsStatusChart();
-        this.createGoalBarChart(
-          this.goalsValues.map(goal => goal.date),
-          this.goalsValues.map(goal => GoalsGraphsComponent.statusToPercentageMapper.get(goal.selection.value))
-        );
-      });
+          this.goalsValues = [];
+          data.forEach(entry => {
+            this.goalsValues.push(new GoalDay(
+              entry.id,
+              entry.date,
+              new EnrichGoalStatus(entry.selection, entry.failure_type),
+              entry.mode,
+              entry.automatic
+              )
+            );
+          });
+          this.createGoalsStatusChart();
+          this.updateBarChart('weekly');
+        }, error => this.dialog.open(ErrorMessageComponent),
+      )
+    ;
   }
 
   updateBarChart(period: string) {
@@ -127,7 +128,8 @@ export class GoalsGraphsComponent implements OnInit {
           goal.creation_time
         ))
       );
-    });
+    }, error => this.dialog.open(ErrorMessageComponent));
+
   }
 
   editStatusToValueMap() {
