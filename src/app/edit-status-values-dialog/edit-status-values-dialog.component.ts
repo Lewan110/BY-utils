@@ -14,7 +14,6 @@ export class EditStatusValuesDialogComponent implements OnInit {
               private dialogRef: MatDialogRef<EditStatusValuesDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: Map<string, number>) {
     this.form = fb.group({});
-
     this.data.forEach((value: number, key: string) => {
       this.form.addControl(key, new FormControl(value));
     });
@@ -32,7 +31,7 @@ export class EditStatusValuesDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close();
+    this.dialogRef.close(this.data);
   }
 
   getArray(someMap): string[] {

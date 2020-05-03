@@ -213,35 +213,35 @@ export class GoalsGraphsComponent implements OnInit {
     return [
       new GoalDay(
         '1',
-        this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 100)), 'yyyy-MM-dd'),
         new EnrichGoalStatus(GoalStatus.COMPLETED, undefined),
         'entry.mode',
         true
       ),
       new GoalDay(
         '2',
-        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 1)), 'yyyy-MM-dd'),
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 80)), 'yyyy-MM-dd'),
         new EnrichGoalStatus(GoalStatus.FAILED, FailureType.BAD_SITUATION),
         'entry.mode',
         true
       ),
       new GoalDay(
         '3',
-        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 2)), 'yyyy-MM-dd'),
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 60)), 'yyyy-MM-dd'),
         new EnrichGoalStatus(GoalStatus.FAILED, FailureType.FORGET),
         'entry.mode',
         true
       ),
       new GoalDay(
         '4',
-        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 3)), 'yyyy-MM-dd'),
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 40)), 'yyyy-MM-dd'),
         new EnrichGoalStatus(GoalStatus.EMERGENCY, undefined),
         'entry.mode',
         true
       ),
       new GoalDay(
         '5',
-        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 50)), 'yyyy-MM-dd'),
+        this.datePipe.transform(new Date(new Date().setDate(new Date().getDate() - 20)), 'yyyy-MM-dd'),
         new EnrichGoalStatus(GoalStatus.SKIPPED, undefined),
         'entry.mode',
         true
